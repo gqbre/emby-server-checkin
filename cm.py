@@ -1,6 +1,16 @@
 # Terminus终点站签到脚本
 from telegram.client import Telegram
-import re,time
+import os, time
+import ddddocr
+
+ocr = ddddocr.DdddOcr(beta=True)
+
+proxy_type = {
+   '@type': 'proxyTypeSocks5',  # 'proxyTypeSocks5', 'proxyTypeHttp'
+}
+proxy_port = 1080
+proxy_server = '127.0.0.1'
+
 an=[1]
 # 如有两个账号，则an=[1，2]，以此类推，并在下方填入多账号信息
 for accn in an:
@@ -10,8 +20,12 @@ for accn in an:
             api_hash='your api hash', # 填入 api hash
             phone='your phone number', # Telegram账号
             database_encryption_key='passw0rd!',
-            files_directory="/home/$(id -un)/emby-server-checkin-bot/sessions", # 修改储存session文件位置，防止重启后session失效
-            library_path="/home/$(id -un)/emby-server-checkin-bot/libtdjson.so", # libtdjson.so的绝对路径
+            files_directory=f"{os.getcwd()}/sessions", # 修改储存session文件位置，防止重启后session失效
+            library_path=f"{os.getcwd()}/libtdjson.so", # tdlib 的绝对路径
+            # 如需代理，请取消下方注释
+            # proxy_server=proxy_server,
+            # proxy_port=proxy_port,
+            # proxy_type=proxy_type,
         )
     # #多账号支持
     # if accn == 2:
@@ -21,47 +35,53 @@ for accn in an:
     #         phone='your phone number', # Telegram账号
     #         database_encryption_key='passw0rd!',
     #         files_directory="/home/$(id -un)/emby-server-checkin-bot/sessions", # 修改储存session文件位置，防止重启后session失效
-    #         library_path="/home/$(id -un)/emby-server-checkin-bot/libtdjson.so", # libtdjson.so的绝对路径
+    #         library_path="/home/$(id -un)/emby-server-checkin-bot/libtdjson.so", # tdlib 的绝对路径
+    #         如需代理，请取消下方注释
+    #         proxy_server=proxy_server,
+    #         proxy_port=proxy_port,
+    #         proxy_type=proxy_type,
     #     )
     tg.login()
     # chat id
     # 厂妹 1429576125
-    # 卷毛鼠活动机器人 1260610044
+    # 卷毛鼠活动机器人 1723810586
 
     def send_verification_code(update):
+        # print('message', update)
         # 所有的新消息都会被监听，增加判断只监听自己感兴趣的
         if 1429576125 == update['message']['chat_id']:
             # print(update)
-            # 提取问题并且计算
-            question = update['message']['content']['text']['text']
-            print(question)
-            a = re.findall(r"\s\s(.+?)\+", question, re.M)
-            b = re.findall(r"\+(.+?)=", question, re.M)
-            if a and b:
-                print(a, b)
-                c = int(a[-1].strip()) + int(b[-1].strip())
-                answers = update['message']['reply_markup']['rows'][0]
-                print(f'{a} + {b} = {c}')
-                # 用答案和内联键盘值做匹配，一旦匹配执行按钮点击效果
-                for answer in answers:
-                    print(f'答案：{answer["text"]}')
-                    if int(answer['text']) == c:
-                        payload = {
-                            '@type': 'callbackQueryPayloadData',
-                            'data': answer['type']['data'],  ##每一个内联键盘都带有data数据
-                        }
-                        # 发送答案（点击内联键盘）
-                        result = tg.call_method(method_name='getCallbackQueryAnswer',
-                                                params={'chat_id': update['message']['chat_id'],
-                                                        'message_id': update['message']['id'], 'payload': payload})
-                        result.wait()
-                        if result.error:
-                            print(f'getCallbackQueryAnswer error: {result.error_info}')
-                        else:
-                            print(f'getCallbackQueryAnswer: {result.update}')
-                        break
+            message = update['message']['content']
+            print('message', message)
+
+            if (message.__contains__('photo')):
+                file_id = message['photo']['sizes'][0]['photo']['id']
+                print('file_id', file_id)
+                tg.call_method(method_name='downloadFile', params={'file_id': file_id, 'priority': 1})
+
+
+    def file_handler(update):
+        if (update['file']['local']['is_downloading_completed']):
+            file_path = update['file']['local']['path']
+            print('file_path', file_path)
+
+            with open(file_path, 'rb') as f:
+                image = f.read()
+
+            res = ocr.classification(image)
+            print(f'验证码: {res}')
+
+            time.sleep(2)
+
+            tg.send_message(
+                chat_id=1429576125,
+                text=res, # 发送验证码
+            )
+
+    tg.add_update_handler('updateFile', file_handler)
 
     tg.add_update_handler('updateNewMessage', send_verification_code)
+
     result = tg.get_chats()
     result.wait()
     result = tg.send_message(
@@ -70,4 +90,4 @@ for accn in an:
         )
     result.wait()
     time.sleep(10) # 等待15秒签到完毕后退出程序
-    tg.stop()  
+    tg.stop()
