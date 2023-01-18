@@ -1,6 +1,6 @@
 # emby-server-checkin
 
-# 终点站、卷毛鼠 emby 公益服签到机器人
+# Terminus 终点站、卷毛鼠 emby 公益服签到机器人
 
 参考[Orzlee telegram-自动签到](https://www.orzlee.com/Just-write-something/2022/01/05/telegram-automatic-checkin.html)，利用[python-telegram](https://github.com/alexander-akhmetov/python-telegram)库实现
 
@@ -78,7 +78,7 @@ crontab -e
 在末行输入
 
 ```
-1 16 * * * "python3" "替换为绝对路径/emby-server-checkin/cm.py"
+1 16 * * * cd /root/emby-server-checkin && python3 cm.py >> /root/emby-server-checkin/cm.log 2>&1
 ```
 
-保存退出后自动签到程序将在 UTC+8 的 0:01 分自动签到
+替换为你的项目路径，保存退出后自动签到程序将在 UTC+8 的 8:01 分自动签到
