@@ -49,6 +49,13 @@ for accn in an:
     answers = []
     message = {}
 
+    def send_checkin():
+        result=tg.send_message(
+            chat_id=1723810586,
+            text="/checkin", # 发送签到指令
+        )
+        result.wait()
+
     def send_verification_code(update):
         global answers
         global message
@@ -81,6 +88,10 @@ for accn in an:
             res = ocr.classification(image)
             print(f'验证码: {res}')
 
+            if (res.__len__() != 4):
+                send_checkin()
+                return
+
             print('answers', answers)
 
             # 用答案和内联键盘值做匹配，一旦匹配执行按钮点击效果
@@ -112,10 +123,10 @@ for accn in an:
 
     result = tg.get_chats()
     result.wait()
-    result=tg.send_message(
-            chat_id=1723810586,
-            text="/checkin", # 发送签到指令
-        )
-    result.wait()
-    time.sleep(10) # 等待15秒签到完毕后退出程序
+    send_checkin()
+
+    if (answers.__len__() > 0 and message['content'].__contains__('text') and message['content']['text']['text'].find('验证通过') != 0):
+        send_checkin()
+
+    time.sleep(30) # 等待30秒签到完毕后退出程序
     tg.stop()
