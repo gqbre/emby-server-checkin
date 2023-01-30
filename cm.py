@@ -89,5 +89,5 @@ for accn in an:
             text="/checkin", # 发送签到指令
         )
     result.wait()
-    time.sleep(10) # 等待15秒签到完毕后退出程序
+    time.sleep(15) # 等待15秒签到完毕后退出程序
     tg.stop()
