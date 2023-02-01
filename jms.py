@@ -15,9 +15,9 @@ an=[1] #账号数量
 for accn in an:
     if accn == 1: # 第一个账号
         tg = Telegram(
-            api_id='your api id', # 填入api id
-            api_hash='your api hash', # 填入 api hash
-            phone='your phone number', # Telegram账号
+            api_id=f"{os.getenv('api_id')}", # 填入 api id
+            api_hash=f"{os.getenv('api_hash')}", # 填入 api hash
+            phone=f"{os.getenv('phone')}", # Telegram 账号
             database_encryption_key='passw0rd!',
             files_directory=f"{os.getcwd()}/sessions", # 修改储存session文件位置，防止重启后session失效
             library_path=f"{os.getcwd()}/libtdjson.so", # libtdjson 的绝对路径
