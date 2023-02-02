@@ -1,8 +1,33 @@
-# emby-server-checkin
+# [Terminus 终点站](https://t.me/EmbyPublic)、[卷毛鼠](https://t.me/Curly_Mouse) Emby 公益服自动签到
 
-# Terminus 终点站、卷毛鼠 emby 公益服签到机器人
+> 参考[Orzlee telegram-自动签到](https://www.orzlee.com/Just-write-something/2022/01/05/telegram-automatic-checkin.html)，利用[python-telegram](https://github.com/alexander-akhmetov/python-telegram) 库实现
 
-参考[Orzlee telegram-自动签到](https://www.orzlee.com/Just-write-something/2022/01/05/telegram-automatic-checkin.html)，利用[python-telegram](https://github.com/alexander-akhmetov/python-telegram)库实现
+博客地址: [https://www.sheyilin.com/2023/02/emby-server-checkin](https://www.sheyilin.com/2023/02/emby-server-checkin)
+
+github: [https://github.com/gqbre/emby-server-checkin](https://github.com/gqbre/emby-server-checkin)
+
+DockerHub: [https://hub.docker.com/r/gqbre/emby-server-checkin](https://hub.docker.com/r/gqbre/emby-server-checkin)
+
+# docker 版本
+
+登录信息使用环境变量配置，docker 版本代理配置功能暂不可用，默认你的网络科学。
+
+```
+docker pull gqbre/emby-server-checkin
+docker run -d --name emby-server-checkin -e api_id="your api id" -e api_hash="your api hash" -e phone="your phone number" gqbre/emby-server-checkin
+```
+
+首次启动容器后需要进行一次登录，下次启动容器时会自动读取 session 文件夹，无需再次登录。
+
+```
+docker exec -it emby-server-checkin /bin/bash
+python cm.py
+# 输入验证码，等待首次签到完成
+```
+
+自动签到程序将在 UTC+8 的 10:00, 10:05 分自动签到
+
+# 以下手动挡
 
 ## 0x00 系统环境准备
 
@@ -50,7 +75,7 @@ vim cm.py
 tg = Telegram(
     api_id='your api id', # 填入api id
     api_hash='your api hash', # 填入 api hash
-    phone='your phone number', # Telegram账号
+    phone='your phone number', # Telegram 账号
     ...
 )
 ```
@@ -78,7 +103,8 @@ crontab -e
 在末行输入
 
 ```
-1 16 * * * cd /root/emby-server-checkin && python3 cm.py >> /root/emby-server-checkin/cm.log 2>&1
+0 2 * * * cd /root/emby-server-checkin && python3 cm.py >> /root/emby-server-checkin/cm.log 2>&1
+5 2 * * * cd /root/emby-server-checkin && python3 jms.py >> /root/emby-server-checkin/jms.log 2>&1
 ```
 
-替换为你的项目路径，保存退出后自动签到程序将在 UTC+8 的 8:01 分自动签到
+替换为你的项目路径，保存退出后自动签到程序将在 UTC+8 的 10:00, 10:05 分自动签到
