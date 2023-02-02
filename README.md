@@ -1,8 +1,31 @@
 # emby-server-checkin
 
-# Terminus 终点站、卷毛鼠 emby 公益服签到机器人
+## Terminus 终点站、卷毛鼠 emby 公益服签到机器人
 
 参考[Orzlee telegram-自动签到](https://www.orzlee.com/Just-write-something/2022/01/05/telegram-automatic-checkin.html)，利用[python-telegram](https://github.com/alexander-akhmetov/python-telegram)库实现
+
+# docker 版本
+
+[gqbre/emby-server-checkin](https://hub.docker.com/r/gqbre/emby-server-checkin)
+
+登录信息使用环境变量配置，docker 版本代理配置功能暂不可用，默认你的网络科学。
+
+```
+docker pull gqbre/emby-server-checkin
+docker run -d --name emby-server-checkin -e api_id="your api id" -e api_hash="your api hash" -e phone="your phone number" gqbre/emby-server-checkin
+```
+
+首次启动容器后需要进行一次登录，下次启动容器时会自动读取 session 文件夹，无需再次登录。
+
+```
+docker exec -it emby-server-checkin /bin/bash
+python cm.py
+# 输入验证码，等待首次签到完成
+```
+
+自动签到程序将在 UTC+8 的 10:00, 10:05 分自动签到
+
+# 以下手动挡
 
 ## 0x00 系统环境准备
 
@@ -11,8 +34,10 @@
 从 GitHub clone 本 repo:
 
 ```
+
 cd ~
 git clone https://github.com/gqbre/emby-server-checkin.git
+
 ```
 
 ## 0x01 Python 环境
@@ -20,14 +45,18 @@ git clone https://github.com/gqbre/emby-server-checkin.git
 要求 Python >= 3.6, pip3
 
 ```
+
 python3 -V
+
 ```
 
 安装 python-telegram 以及 验证码识别 ddddocr
 
 ```
+
 cd emby-server-checkin
 pip3 install python-telegram ddddocr
+
 ```
 
 ## 0x02 Telegram 账号登陆
@@ -41,7 +70,9 @@ cm.py 为 Terminus 终点站签到脚本，jms.py 为卷毛鼠公益服签到脚
 编辑 cm.py 脚本输入上一步获取的 api_id 和 api_hash。支持多账号，多账号配置根据脚本中提示自行配置。
 
 ```
+
 vim cm.py
+
 ```
 
 自行替换脚本以下章节中 api_id, api_hash, Phone number。
@@ -50,7 +81,7 @@ vim cm.py
 tg = Telegram(
     api_id='your api id', # 填入api id
     api_hash='your api hash', # 填入 api hash
-    phone='your phone number', # Telegram账号
+    phone='your phone number', # Telegram 账号
     ...
 )
 ```
@@ -78,7 +109,8 @@ crontab -e
 在末行输入
 
 ```
-1 16 * * * cd /root/emby-server-checkin && python3 cm.py >> /root/emby-server-checkin/cm.log 2>&1
+0 2 * * * cd /root/emby-server-checkin && python3 cm.py >> /root/emby-server-checkin/cm.log 2>&1
+5 2 * * * cd /root/emby-server-checkin && python3 jms.py >> /root/emby-server-checkin/jms.log 2>&1
 ```
 
-替换为你的项目路径，保存退出后自动签到程序将在 UTC+8 的 8:01 分自动签到
+替换为你的项目路径，保存退出后自动签到程序将在 UTC+8 的 10:00, 10:05 分自动签到
