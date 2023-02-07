@@ -76,8 +76,10 @@ for accn in an:
                 print('file_id', file_id)
                 tg.call_method(method_name='downloadFile', params={'file_id': file_id, 'priority': 1})
 
+            if (answers.__len__() > 0 and message['content'].__contains__('text') and message['content']['text']['text'].find('验证失败') == 0):
+                send_checkin()
+
     def file_handler(update):
-        global message
         if (update['file']['local']['is_downloading_completed']):
             file_path = update['file']['local']['path']
             print('file_path', file_path)
@@ -94,6 +96,7 @@ for accn in an:
 
             print('answers', answers)
 
+            count = 0
             # 用答案和内联键盘值做匹配，一旦匹配执行按钮点击效果
             for x in range(len(res)):
                 # print(f'目标字符：{res[x]}')
@@ -101,6 +104,7 @@ for accn in an:
                     # print(f'当前遍历字符：{answer["text"]}')
                     if answer['text'] == res[x]:
                         print(f'匹配目标字符：{res[x]}')
+                        count += 1
                         payload = {
                             '@type': 'callbackQueryPayloadData',
                             'data': answer['type']['data'],  ##每一个内联键盘都带有data数据
@@ -117,6 +121,9 @@ for accn in an:
                             print(f'getCallbackQueryAnswer: {result.update}')
                         break
 
+            if (count != 4):
+                send_checkin()
+
     tg.add_update_handler('updateFile', file_handler)
 
     tg.add_update_handler('updateNewMessage', send_verification_code)
@@ -125,8 +132,5 @@ for accn in an:
     result.wait()
     send_checkin()
 
-    if (answers.__len__() > 0 and message['content'].__contains__('text') and message['content']['text']['text'].find('验证通过') != 0):
-        send_checkin()
-
-    time.sleep(30) # 等待30秒签到完毕后退出程序
+    time.sleep(120) # 等待100秒签到完毕后退出程序
     tg.stop()

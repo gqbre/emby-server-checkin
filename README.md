@@ -4,7 +4,7 @@
 
 博客地址: [https://www.sheyilin.com/2023/02/emby-server-checkin](https://www.sheyilin.com/2023/02/emby-server-checkin)
 
-github: [https://github.com/gqbre/emby-server-checkin](https://github.com/gqbre/emby-server-checkin)
+Github: [https://github.com/gqbre/emby-server-checkin](https://github.com/gqbre/emby-server-checkin)
 
 DockerHub: [https://hub.docker.com/r/gqbre/emby-server-checkin](https://hub.docker.com/r/gqbre/emby-server-checkin)
 
@@ -52,7 +52,7 @@ python3 -V
 
 ```
 cd emby-server-checkin
-pip3 install python-telegram ddddocr
+pip3 install -r requirements.txt
 ```
 
 ## 0x02 Telegram 账号登陆

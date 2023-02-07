@@ -1,4 +1,5 @@
 my_env/
 sessions/
 .history/
+*-u*
 
