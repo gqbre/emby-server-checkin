@@ -48,13 +48,19 @@ for accn in an:
 
     answers = []
     message = {}
+    sending = False
 
     def send_checkin():
+        global sending
+        if (sending):
+            return
+        sending = True
         result=tg.send_message(
             chat_id=1723810586,
             text="/checkin", # 发送签到指令
         )
         result.wait()
+        sending = False
 
     def send_verification_code(update):
         global answers
@@ -75,9 +81,6 @@ for accn in an:
                 file_id = message['content']['photo']['sizes'][0]['photo']['id']
                 print('file_id', file_id)
                 tg.call_method(method_name='downloadFile', params={'file_id': file_id, 'priority': 1})
-
-            if (answers.__len__() > 0 and message['content'].__contains__('text') and message['content']['text']['text'].find('验证失败') == 0):
-                send_checkin()
 
     def file_handler(update):
         if (update['file']['local']['is_downloading_completed']):
