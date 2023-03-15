@@ -135,5 +135,5 @@ for accn in an:
     result.wait()
     send_checkin()
 
-    time.sleep(120) # 等待100秒签到完毕后退出程序
+    time.sleep(120) # 等待120秒签到完毕后退出程序
     tg.stop()

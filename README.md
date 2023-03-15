@@ -61,7 +61,8 @@ pip3 install -r requirements.txt
 
 登陆后选择 API development tools，自行填写信息后提交后即可获取 api_id 和 api_hash。若显示 error 可能为代理问题，根据环境决定是否启用代理配置代码。
 
-cm.py 为 Terminus 终点站签到脚本，jms.py 为卷毛鼠公益服签到脚本。libtdjson.so 为编译好的 [tdlib](https://github.com/tdlib/td) 文件，MacOS 使用 libtdjson.dylib 文件。
+cm.py 为 Terminus 终点站签到脚本，jms.py 为卷毛鼠公益服签到脚本。libtdjson\_\*.so 为编译好的 [tdlib](https://github.com/tdlib/td) 文件。x86_64 架构使用 libtdjson_amd64.so； arm64 架构使用 libtdjson_arm64.so；MacOS 使用 libtdjson.dylib 文件; 其他系统架构请自行编译。
+由于 python-telegram 限制，项目不支持 windows 系统。
 
 编辑 cm.py 脚本输入上一步获取的 api_id 和 api_hash。支持多账号，多账号配置根据脚本中提示自行配置。
 
@@ -77,6 +78,7 @@ tg = Telegram(
     api_hash='your api hash', # 填入 api hash
     phone='your phone number', # Telegram 账号
     ...
+    library_path=f"{os.getcwd()}/libtdjson\_\*.so", #  根据系统架构选择对应的 libtdjson 文件
 )
 ```
 

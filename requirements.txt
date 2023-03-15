@@ -1,2 +1,2 @@
 ddddocr==1.4.7
-python_telegram==0.16.0
+python_telegram==0.18.0
